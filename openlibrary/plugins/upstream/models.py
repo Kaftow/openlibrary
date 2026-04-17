@@ -885,33 +885,29 @@ class Changeset(client.Changeset):
         """Return duplicate keys referenced anywhere in a nested value."""
         matches = set()
         if isinstance(value, dict):
-            key = value.get('key')
+            key = value.get("key")
             if key in duplicate_keys:
                 matches.add(key)
             for item in value.values():
-                matches.update(
-                    Changeset._find_referenced_duplicate_keys(item, duplicate_keys)
-                )
+                matches.update(Changeset._find_referenced_duplicate_keys(item, duplicate_keys))
         elif isinstance(value, list):
             for item in value:
-                matches.update(
-                    Changeset._find_referenced_duplicate_keys(item, duplicate_keys)
-                )
+                matches.update(Changeset._find_referenced_duplicate_keys(item, duplicate_keys))
         return matches
 
     def get_related_changes_by_duplicate(self):
         """Group non-master, non-duplicate merge changes by referenced duplicate key."""
-        duplicate_keys = self.data.get('duplicates') or []
+        duplicate_keys = self.data.get("duplicates") or []
         related_by_duplicate = {dup_key: [] for dup_key in duplicate_keys}
         if not duplicate_keys:
             return related_by_duplicate
 
-        master_key = self.data.get('master')
+        master_key = self.data.get("master")
         duplicate_key_set = set(duplicate_keys)
 
         for item in self.changes or []:
-            item_key = item.get('key')
-            item_revision = item.get('revision')
+            item_key = item.get("key")
+            item_revision = item.get("revision")
             if item_key == master_key or item_key in duplicate_key_set:
                 continue
             if not item_key or not item_revision or item_revision <= 1:
@@ -926,9 +922,7 @@ class Changeset(client.Changeset):
             except Exception:
                 continue
 
-            matched_duplicates = self._find_referenced_duplicate_keys(
-                doc_data, duplicate_key_set
-            )
+            matched_duplicates = self._find_referenced_duplicate_keys(doc_data, duplicate_key_set)
             for dup_key in matched_duplicates:
                 related_by_duplicate[dup_key].append(item)
 
@@ -965,13 +959,11 @@ class Changeset(client.Changeset):
         if existing_undo := self.get_duplicate_undo_changeset(duplicate_key):
             return existing_undo
 
-        duplicate_changes = [c for c in self.changes if c.get('key') == duplicate_key]
+        duplicate_changes = [c for c in self.changes if c.get("key") == duplicate_key]
         if not duplicate_changes:
-            raise ValueError(
-                f"No merge changes found for duplicate key: {duplicate_key}"
-            )
+            raise ValueError(f"No merge changes found for duplicate key: {duplicate_key}")
 
-        docs = [self._get_doc(c['key'], c['revision'] - 1) for c in duplicate_changes]
+        docs = [self._get_doc(c["key"], c["revision"] - 1) for c in duplicate_changes]
         docs = self.process_docs_before_undo(docs)
 
         data = {"parent_changeset": self.id, "duplicate_key": duplicate_key}
@@ -1014,11 +1006,7 @@ class Changeset(client.Changeset):
 
     def get_undone_duplicate_keys(self):
         """Return a set of duplicate keys already undone for this transaction."""
-        return {
-            c.data.get("duplicate_key")
-            for c in self.get_duplicate_undo_changesets() or []
-            if c.data.get("duplicate_key")
-        }
+        return {c.data.get("duplicate_key") for c in self.get_duplicate_undo_changesets() or [] if c.data.get("duplicate_key")}
 
 
 class NewAccountChangeset(Changeset):
@@ -1076,11 +1064,11 @@ class UndoSingleDuplicate(Changeset):
         return False
 
     def get_parent_changeset(self):
-        parent = self.data['parent_changeset']
+        parent = self.data["parent_changeset"]
         return web.ctx.site.get_change(parent)
 
     def get_duplicate_key(self):
-        return self.data.get('duplicate_key')
+        return self.data.get("duplicate_key")
 
 
 class AddBookChangeset(Changeset):

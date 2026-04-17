@@ -202,15 +202,11 @@ class recentchanges_undo_duplicate(delegate.page):
         return features.is_enabled("recentchanges_v2")
 
     def POST(self, id):
-        allowed_usergroups = ['/usergroup/admin', '/usergroup/super-librarians']
-        if not (user := get_current_user()) or not (
-            user.is_member_of_any(allowed_usergroups)
-        ):
+        allowed_usergroups = ["/usergroup/admin", "/usergroup/super-librarians"]
+        if not (user := get_current_user()) or not (user.is_member_of_any(allowed_usergroups)):
             raise web.unauthorized()
         if not features.is_enabled("undo"):
-            return render_template(
-                "permission_denied", web.ctx.path, "Permission denied to undo."
-            )
+            return render_template("permission_denied", web.ctx.path, "Permission denied to undo.")
 
         id = int(id)
         change = web.ctx.site.get_change(id)
