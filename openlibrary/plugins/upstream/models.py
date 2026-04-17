@@ -1179,10 +1179,10 @@ def setup():
     client.register_thing_class('/type/tag', Tag)
 
     client.register_changeset_class(None, Changeset)  # set the default class
-    client.register_changeset_class('merge-authors', MergeAuthors)
-    client.register_changeset_class('merge-works', MergeWorks)
-    client.register_changeset_class('undo', Undo)
-    client.register_changeset_class('undo-single-duplicate', UndoSingleDuplicate)
+    client.register_changeset_class("merge-authors", MergeAuthors)
+    client.register_changeset_class("merge-works", MergeWorks)
+    client.register_changeset_class("undo", Undo)
+    client.register_changeset_class("undo-single-duplicate", UndoSingleDuplicate)
 
-    client.register_changeset_class('add-book', AddBookChangeset)
-    client.register_changeset_class('new-account', NewAccountChangeset)
+    client.register_changeset_class("add-book", AddBookChangeset)
+    client.register_changeset_class("new-account", NewAccountChangeset)
